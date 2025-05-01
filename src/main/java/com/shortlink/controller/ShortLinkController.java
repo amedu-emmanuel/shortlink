@@ -24,6 +24,7 @@ public class ShortLinkController {
 
     @PostMapping("/encode")
     public ResponseEntity<?> encode(@RequestBody @Valid EncodeRequest request) {
+        System.out.println("Received URL: " + request.getUrl());
         // Validate the URL before processing
         if (!UrlValidator.isValid(request.getUrl())) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid or unreachable URL"));
