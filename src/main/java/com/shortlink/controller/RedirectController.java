@@ -2,6 +2,7 @@ package com.shortlink.controller;
 
 import com.shortlink.model.ShortLink;
 import com.shortlink.service.ShortLinkService;
+import com.shortlink.util.UrlValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ public class RedirectController {
 
     @GetMapping("/{urlPath}")
     public ResponseEntity<?> redirect(@PathVariable String urlPath) {
+
         ShortLink link = service.incrementVisitCount(urlPath);
         if (link != null) {
             return ResponseEntity.status(302)

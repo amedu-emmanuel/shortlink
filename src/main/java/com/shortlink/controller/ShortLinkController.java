@@ -3,7 +3,9 @@ package com.shortlink.controller;
 import com.shortlink.dto.DecodeRequest;
 import com.shortlink.dto.EncodeRequest;
 import com.shortlink.model.ShortLink;
+import com.shortlink.dto.ErrorResponse;
 import com.shortlink.service.ShortLinkService;
+import com.shortlink.util.UrlValidator;  // Import UrlValidator
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,14 @@ public class ShortLinkController {
     }
 
     @PostMapping("/encode")
-    public ResponseEntity<ShortLink> encode(@RequestBody @Valid EncodeRequest request) {
-        return ResponseEntity.ok(service.encode(request.getUrl()));
+    public ResponseEntity<?> encode(@RequestBody @Valid EncodeRequest request) {
+        // Validate the URL before processing
+        if (!UrlValidator.isValid(request.getUrl())) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid or unreachable URL"));
+        }
+
+        ShortLink shortLink = service.encode(request.getUrl());
+        return ResponseEntity.ok(shortLink);
     }
 
     @PostMapping("/decode")
