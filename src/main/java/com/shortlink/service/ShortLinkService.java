@@ -2,6 +2,7 @@ package com.shortlink.service;
 
 import com.shortlink.model.ShortLink;
 import com.shortlink.repository.ShortLinkRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,21 @@ import java.util.UUID;
 public class ShortLinkService {
 
     private final ShortLinkRepository repository = new ShortLinkRepository();
+
+    /**
+     * The base URL used to generate short links.
+     *
+     * During local development, this should be set to "http://localhost:8080"
+     * to ensure that short URLs redirect correctly when accessed from a browser.
+     * This avoids DNS resolution issues that would occur with custom domains
+     * like "http://short.est" unless manually mapped in the hosts file.
+     *
+     * In production, update this to the actual custom domain
+     * (e.g., "https://short.est") where the application is hosted.
+     *
+     * This value is loaded from the application.properties file using @Value.
+     */
+
     private static final String BASE_URL = "http://short.est/";
 
     public ShortLink encode(String originalUrl) {
