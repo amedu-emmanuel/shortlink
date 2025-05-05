@@ -7,10 +7,13 @@ import com.shortlink.dto.ErrorResponse;
 import com.shortlink.service.ShortLinkService;
 import com.shortlink.util.UrlValidator;  // Import UrlValidator
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -35,12 +38,20 @@ public class ShortLinkController {
     }
 
     @PostMapping("/decode")
-    public ResponseEntity<String> decode(@RequestBody @Valid DecodeRequest request) {
+    public ResponseEntity<Map<String, String>> decode(@RequestBody @Valid DecodeRequest request) {
         String originalUrl = service.decode(request.getShortUrl());
-        return originalUrl != null ?
-                ResponseEntity.ok(originalUrl) :
-                ResponseEntity.notFound().build();
+
+        if (originalUrl != null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("originalUrl", originalUrl);
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Short URL not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
+
 
     @GetMapping("/statistic/{urlPath}")
     public ResponseEntity<ShortLink> statistics(@PathVariable String urlPath) {
